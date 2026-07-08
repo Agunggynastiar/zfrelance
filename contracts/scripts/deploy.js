@@ -9,29 +9,35 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   console.log("Deployer address:", deployer.address);
 
-  // 1) Deploy MockZKPVerifier dulu (PENGGANTI SEMENTARA verifier ZKP asli)
-  //    PENTING: sebelum submit final, ganti ini dengan verifier.sol hasil compile snarkjs
-  const MockVerifier = await ethers.getContractFactory("MockZKPVerifier");
-  const mockVerifier = await MockVerifier.deploy();
-  await mockVerifier.waitForDeployment();
-  const verifierAddress = await mockVerifier.getAddress();
-  console.log("MockZKPVerifier deployed di:", verifierAddress);
+  // 1) Deploy Groth16Verifier (mesin kriptografi hasil generate snarkjs)
+  const Groth16Verifier = await ethers.getContractFactory("Groth16Verifier");
+  const groth16Verifier = await Groth16Verifier.deploy();
+  await groth16Verifier.waitForDeployment();
+  const groth16Address = await groth16Verifier.getAddress();
+  console.log("Groth16Verifier deployed di:", groth16Address);
 
-  // 2) Deploy ZFreelance, sambil kasih tahu alamat verifier di atas
+  // 2) Deploy ZKPVerifierAdapter (penerjemah ke interface IZKPVerifier)
+  const Adapter = await ethers.getContractFactory("ZKPVerifierAdapter");
+  const adapter = await Adapter.deploy(groth16Address);
+  await adapter.waitForDeployment();
+  const adapterAddress = await adapter.getAddress();
+  console.log("ZKPVerifierAdapter deployed di:", adapterAddress);
+
+  // 3) Deploy ZFreelance, pakai adapter (BUKAN MockZKPVerifier lagi)
   const ZFreelance = await ethers.getContractFactory("ZFreelance");
-  const zfreelance = await ZFreelance.deploy(verifierAddress);
+  const zfreelance = await ZFreelance.deploy(adapterAddress);
   await zfreelance.waitForDeployment();
   const contractAddress = await zfreelance.getAddress();
   console.log("ZFreelance deployed di:", contractAddress);
 
-  // 3) Ambil ABI hasil compile, lalu tulis ke /shared/abi/ZFreelance.json
-  //    supaya Backend & Frontend pakai ABI + address yang sama persis (Bagian A Kontrak Integrasi)
+  // 4) Tulis ABI + semua address ke /shared/abi/ZFreelance.json
   const artifact = await artifacts.readArtifact("ZFreelance");
 
   const outputData = {
     network: network.name,
     contractAddress: contractAddress,
-    verifierAddress: verifierAddress,
+    verifierAddress: adapterAddress,
+    groth16VerifierAddress: groth16Address,
     deployedAt: new Date().toISOString(),
     abi: artifact.abi,
   };
@@ -43,8 +49,7 @@ async function main() {
   const outputPath = path.join(outputDir, "ZFreelance.json");
   fs.writeFileSync(outputPath, JSON.stringify(outputData, null, 2));
 
-  console.log("\n✅ ABI + address berhasil ditulis ke:", outputPath);
-  console.log("   Bagikan file ini ke Backend & Frontend Engineer, atau commit ke repo.");
+  console.log("\n✅ ABI + address (verifier ASLI) berhasil ditulis ke:", outputPath);
 }
 
 main().catch((error) => {

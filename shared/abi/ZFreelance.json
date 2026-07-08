@@ -1,8 +1,9 @@
 {
   "network": "sepolia",
-  "contractAddress": "0x24fC640b3948321Ea37E0Ed99738fdF0bCC26D95",
-  "verifierAddress": "0x5c9A59d63F83C1521a7Bf89dBB377A968A417C64",
-  "deployedAt": "2026-07-08T08:42:24.986Z",
+  "contractAddress": "0xb5A3D20aA9C73E00bD38518594118638822dc307",
+  "verifierAddress": "0xB0925523C95E58c2164F6070B0C266790bC34045",
+  "groth16VerifierAddress": "0xec6E9ab8792689317cC9f8129bC111071476A305",
+  "deployedAt": "2026-07-08T11:26:00.188Z",
   "abi": [
     {
       "inputs": [
