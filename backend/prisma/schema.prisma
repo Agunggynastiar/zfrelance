@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id             Int      @id @default(autoincrement())
+  walletAddress  String   @unique
+  name           String
+  passwordHash   String
+  role           String
+  createdAt      DateTime @default(now())
+
+  profile Profile?
+
+  employerGigs   Gig[] @relation("EmployerGigs")
+  freelancerGigs Gig[] @relation("FreelancerGigs")
+}
+
+model Profile {
+  id          Int    @id @default(autoincrement())
+  photoUrl    String?
+  portfolio   String?
+  bio         String?
+
+  userId Int @unique
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model Gig {
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String
+  budget        Int
+  status        String   @default("OPEN")
+  employerId    Int
+  freelancerId  Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  employer   User @relation("EmployerGigs", fields: [employerId], references: [id])
+  freelancer User? @relation("FreelancerGigs", fields: [freelancerId], references: [id])
+}
+
+model GigIndex {
+  id                Int    @id @default(autoincrement())
+  gigId             Int    @unique
+  employerWallet    String
+  freelancerWallet  String?
+  amount            String
+  status            String
+  lastSyncedBlock   Int
+}
+
+model RawCertificate {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  institutionName  String
+  certificateCode  String
+  createdAt        DateTime @default(now())
+}
