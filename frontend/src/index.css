@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base { body { @apply bg-dark-900 text-white font-display antialiased; } }
+
+@layer components {
+  .btn-primary   { @apply bg-brand-500 hover:bg-brand-400 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95; }
+  .btn-secondary { @apply bg-dark-700 hover:bg-dark-600 text-white font-medium px-6 py-3 rounded-xl border border-dark-600 hover:border-brand-700 transition-all duration-200; }
+  .btn-danger    { @apply bg-red-600 hover:bg-red-500 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 disabled:opacity-40; }
+  .card          { @apply bg-dark-800 border border-dark-600 rounded-2xl p-6; }
+  .input-field   { @apply w-full bg-dark-700 border border-dark-600 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 transition-colors duration-200; }
+  .badge-open      { @apply bg-brand-900 text-brand-400 text-xs font-mono px-2 py-1 rounded-md; }
+  .badge-progress  { @apply bg-yellow-900 text-yellow-300 text-xs font-mono px-2 py-1 rounded-md; }
+  .badge-submitted { @apply bg-blue-900 text-blue-300 text-xs font-mono px-2 py-1 rounded-md; }
+  .badge-paid      { @apply bg-green-900 text-green-300 text-xs font-mono px-2 py-1 rounded-md; }
+  .badge-disputed  { @apply bg-red-900 text-red-300 text-xs font-mono px-2 py-1 rounded-md; }
+}
